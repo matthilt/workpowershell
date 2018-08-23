@@ -46,14 +46,16 @@ $ConvertedPackagePath = $DirectoryPath + "\ConvertedPackage" # Location of Conve
 $Site = Get-SPOSite -Identity ($TargetWebURL.Substring(0, $TargetWebURL.Length - 1))
 
 "Set-SPOUser"
-Set-SPOUser ` # Sets admin user to Site Collection admin for SharePoint Online Site
--Site $site.Url `
+# Sets admin user to Site Collection admin for SharePoint Online Site
+Set-SPOUser `
+	-Site $site.Url `
 	-LoginName $AdminUser `
 	-IsSiteCollectionAdmin $true
 	
 "New-SPOMigrationPackage"
-New-SPOMigrationPackage ` # Creates a new migration package based on source files
--SourceFilesPath $sourceFiles `
+# Creates a new migration package based on source files
+New-SPOMigrationPackage `
+	-SourceFilesPath $sourceFiles `
 	-OutputPackagePath $PackageFolderLocation `
 	-TargetWebUrl $targetWebUrl `
 	-TargetDocumentLibraryPath $TargetDocumentLibraryPath `
@@ -62,8 +64,9 @@ New-SPOMigrationPackage ` # Creates a new migration package based on source file
 	-ReplaceInvalidCharacters
 
 "ConvertTo-SPOMigrationTargetedPackage"
-ConvertTo-SPOMigrationTargetedPackage ` # Converts to targeted package and pulls in actual files
--SourceFilesPath $sourceFiles `
+# Converts to targeted package and pulls in actual files
+ConvertTo-SPOMigrationTargetedPackage `
+	-SourceFilesPath $sourceFiles `
 	-SourcePackagePath $PackageFolderLocation `
 	-OutputPackagePath $ConvertedPackagePath `
 	-TargetWebUrl $targetWebUrl `
@@ -72,9 +75,10 @@ ConvertTo-SPOMigrationTargetedPackage ` # Converts to targeted package and pulls
 	-Credentials $Credentials
 		
 "Invoke-SPOMigrationEncryptUploadSubmit"
+# Uploads and submits package data to create a new migration job
 $UploadData = `
-	Invoke-SPOMigrationEncryptUploadSubmit ` # Uploads and submits package data to create a new migration job
--SourceFilesPath $sourceFiles `
+	Invoke-SPOMigrationEncryptUploadSubmit `
+	-SourceFilesPath $sourceFiles `
 	-SourcePackagePath $ConvertedPackagePath `
 	-Credentials $Credentials `
 	-TargetWebUrl $targetWebUrl

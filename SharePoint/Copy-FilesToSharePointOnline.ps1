@@ -29,6 +29,7 @@ Param(
 
 $DirectoryPath = "$MigrationStoragePath\$(Get-Date -Format yyMMddHHmmss)" # Creates a subfolder based on the date to store migration files
 New-Item $DirectoryPath -type directory
+Set-Location -Path $DirectoryPath
 $LogPath = $DirectoryPath + "\Log.txt" # Log
 
 "Start Time:         " + $(Get-Date) | Out-File $LogPath -Append

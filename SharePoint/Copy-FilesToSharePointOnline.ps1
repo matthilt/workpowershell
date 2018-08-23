@@ -1,3 +1,5 @@
+# Will need SharePoint Online Powershell module installed.
+
 [CmdletBinding()]
 Param(
 	[Parameter(Mandatory = $True)]

@@ -30,10 +30,10 @@ Param(
 $DirectoryPath = "$MigrationStoragePath\$(Get-Date -Format yyMMddHHmmss)" # Creates a subfolder based on the date to store migration files
 New-Item $DirectoryPath -type directory
 $LogPath = $DirectoryPath + "\Log.txt" # Log
-$URLPath = $DirectoryPath + "\URL.txt" # URL
 
-$TargetWebURL | Out-File $LogPath -Append
-$sourcefiles | Out-File $LogPath -Append
+"Start Time:         " + $(Get-Date) | Out-File $LogPath -Append
+"Source Files:       " + $sourcefiles | Out-File $LogPath -Append
+"TargetWebURL:       " + $TargetWebUrl | Out-File $LogPath -Append
 
 $Credentials = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $AdminUser, $(ConvertTo-SecureString $AdminPassword -AsPlainText -Force)
 
@@ -73,7 +73,7 @@ ConvertTo-SPOMigrationTargetedPackage ` # Converts to targeted package and pulls
 		
 "Invoke-SPOMigrationEncryptUploadSubmit"
 $UploadData = `
-	Invoke-SPOMigrationEncryptUploadSubmit ` # Uploads adn submits package data to create a new migration job
+	Invoke-SPOMigrationEncryptUploadSubmit ` # Uploads and submits package data to create a new migration job
 -SourceFilesPath $sourceFiles `
 	-SourcePackagePath $ConvertedPackagePath `
 	-Credentials $Credentials `
@@ -83,20 +83,17 @@ $UploadData = `
 $JobID = $UploadData.JobId
 $JobReportingQueueURI = $UploadData.ReportingQueueUri.AbsoluteUri
 $JobEncryption = $UploadData.Encryption
-$JobEncryptionString = [String]$JobEncryption
-	
-"TargetWebURL:  " + $TargetWebUrl | Out-File $LogPath -Append
-"JobId:  " + $JobId | Out-File $LogPath -Append
+
+"TargetWebURL:       " + $TargetWebUrl | Out-File $LogPath -Append
+"JobId:              " + $JobId | Out-File $LogPath -Append
 "ReportingQueueURI:  " + $JobReportingQueueURI | Out-File $LogPath -Append
-"Encryption:  " + $JobEncryptionString | Format-List * | Out-File $LogPath -Append
+"Encryption Key:     " + ($UploadData.Encryption.EncryptionKey) | Out-File $LogPath -Append
 
 "Get-SPOMigrationJobProgress"
 $Progress = Get-SPOMigrationJobProgress -AzureQueueUri $JobReportingQueueURI -Credentials $Credentials -TargetWebUrl $targetWebUrl -JobIds $JobID -EncryptionParameters $JobEncryption
-$Progress | Format-List *
+$Progress | Out-File $LogPath -Append
 
-"Get-SPOMigrationJobStatus"
-Get-SPOMigrationJobStatus -TargetWebUrl $targetWebUrl -Credentials $Credentials -JobId $JobID
+"End Time:           " + $(Get-Date) | Out-File $LogPath -Append
 
-$UploadData | Format-List *
-	
-$TargetWebUrl | Out-File $URLPath -Append
+#"Get-SPOMigrationJobStatus"
+#Get-SPOMigrationJobStatus -TargetWebUrl $targetWebUrl -Credentials $Credentials -JobId $JobID

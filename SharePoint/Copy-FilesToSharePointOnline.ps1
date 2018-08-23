@@ -86,15 +86,13 @@ $UploadData = `
 #Information about job
 $JobID = $UploadData.JobId
 $JobReportingQueueURI = $UploadData.ReportingQueueUri.AbsoluteUri
-$JobEncryption = $UploadData.Encryption
 
-"TargetWebURL:       " + $TargetWebUrl | Out-File $LogPath -Append
-"JobId:              " + $JobId | Out-File $LogPath -Append
-"ReportingQueueURI:  " + $JobReportingQueueURI | Out-File $LogPath -Append
+"JobId:              " + ($UploadData.JobId) | Out-File $LogPath -Append
+"ReportingQueueURI:  " + ($UploadData.ReportingQueueUri.AbsoluteUri) | Out-File $LogPath -Append
 "Encryption Key:     " + ($UploadData.Encryption.EncryptionKey) | Out-File $LogPath -Append
 
 "Get-SPOMigrationJobProgress"
-$Progress = Get-SPOMigrationJobProgress -AzureQueueUri $JobReportingQueueURI -Credentials $Credentials -TargetWebUrl $targetWebUrl -JobIds $JobID -EncryptionParameters $JobEncryption
+$Progress = Get-SPOMigrationJobProgress -AzureQueueUri $JobReportingQueueURI -Credentials $Credentials -TargetWebUrl $targetWebUrl -JobIds $JobID -EncryptionParameters ($UploadData.Encryption)
 $Progress | Out-File $LogPath -Append
 
 "End Time:           " + $(Get-Date) | Out-File $LogPath -Append
